@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chatroom</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  </head>
+  <body>
+    <div
+      id="chatroom-window"
+      style="min-height: 150px; min-width: 60px; border: 2px solid red"
+    >
+      This is the dummy chatroom window!
+    </div>
+    <input type="text" id="message-content" />
+    <input type="button" id="send-message" value="Send" />
+    <input type="button" class="button" value="Sign out" id="logout" />
+  </body>
+</html>
+
+<script src="./javascript/logout.js"></script>
+<script src="./javascript/socket.io.js"></script>
+<script src="./javascript/chatroom.js"></script>
