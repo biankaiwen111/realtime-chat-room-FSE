@@ -24,13 +24,13 @@ exports.register = async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
   const { username, password } = req.body;
-  let id;
+  let userName;
   User.findOne({ username })
     .then((user) => {
       if (!user) {
         res.json({ message: "wrong password or username!" });
       }
-      id = user._id;
+      userName = user.username;
       const hashedPassword = user.password;
 
       return bcrypt.compare(password, hashedPassword);
@@ -39,7 +39,7 @@ exports.login = async (req, res, next) => {
       //console.log(id);
       if (result === true) {
         //login successfully
-        jwt.sign({ id: id }, process.env.PK, function (err, token) {
+        jwt.sign({ username: userName }, process.env.PK, function (err, token) {
           return res.json({ message: "Login successfully!", token: token });
         });
       } else {

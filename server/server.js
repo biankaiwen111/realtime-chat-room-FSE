@@ -1,7 +1,7 @@
 require("dotenv").config();
 const socket = require("socket.io");
 const jwt = require("jsonwebtoken");
-
+const Message = require("./models/Message");
 const app = require("./app");
 const mongoose = require("mongoose");
 
@@ -32,7 +32,7 @@ io.use(async (socket, next) => {
   try {
     const token = socket.handshake.query.token;
     var decoded = await jwt.verify(token, process.env.PK);
-    socket.userId = decoded.id;
+    socket.username = decoded.username;
     //console.log(decoded); // bar
     console.log("auth here!");
     next();
@@ -42,15 +42,24 @@ io.use(async (socket, next) => {
 });
 
 io.on("connection", (socket) => {
-  console.log("Connected " + socket.userId);
+  console.log("Connected " + socket.username);
 
   socket.on("disconnect", () => {
-    console.log("Disconnted: " + socket.userId);
+    console.log("Disconnted: " + socket.username);
   });
 
-  socket.on("message", ({ message }) => {
+  socket.on("message", async ({ message }) => {
     console.log(message);
-    console.log(socket.userId);
-    io.emit("newMessage", { message });
+    console.log(socket.username);
+    const newMessage = new Message({
+      user: socket.username,
+      message: message,
+    });
+    await newMessage.save();
+    io.emit("newMessage", {
+      message: newMessage.message,
+      timestamp: newMessage.time,
+      username: newMessage.user,
+    });
   });
 });

@@ -1,3 +1,12 @@
+const Message = require("../models/Message");
+
 exports.getChatroom = async (req, res) => {
-  res.json({ message: "successfully get chatroom page!" });
+  const messages = await Message.find({})
+    .sort({ time: "ascending" })
+    .exec((err, docs) => {
+      if (err) {
+        res.json({ historyMessages: [] });
+      }
+      res.json({ historyMessages: docs });
+    });
 };
