@@ -10,7 +10,7 @@ const messageSchema = new mongoose.Schema({
     type: String,
     required: "Message is required!",
   },
-  time: { type: Date, default: Date.now },
+  time: { type: Date, default: () => Date.now() - 7 * 60 * 60 * 1000 },
 });
 
 module.exports = mongoose.model("Message", messageSchema);

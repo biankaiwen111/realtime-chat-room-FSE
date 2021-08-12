@@ -26,6 +26,7 @@ if (window.localStorage.getItem("FSEToken") !== null) {
 }
 
 $("#login").on("click", function () {
+  console.log("login!");
   const username = $("#username").val().trim();
   const password = $("#password").val().trim();
 
