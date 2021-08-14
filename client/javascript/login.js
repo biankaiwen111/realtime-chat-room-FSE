@@ -26,7 +26,6 @@ if (window.localStorage.getItem("FSEToken") !== null) {
 }
 
 $("#login").on("click", function () {
-  console.log("login!");
   const username = $("#username").val().trim();
   const password = $("#password").val().trim();
 
@@ -36,6 +35,7 @@ $("#login").on("click", function () {
     contentType: "application/json",
     url: "http://localhost:8000/users/login",
     success: function (data) {
+      console.log(data.status);
       console.log("successfully login!");
       console.log(JSON.stringify(data));
       window.localStorage.setItem("FSEToken", data.token);
@@ -46,8 +46,9 @@ $("#login").on("click", function () {
           "/chatroom.html"
       );
     },
-    error: function (textStatus, errorThrown) {
-      console.log("error!");
+    error: function (xhr, status, error) {
+      const info = JSON.parse(xhr.responseText);
+      alert(info["message"]);
     },
   });
 });

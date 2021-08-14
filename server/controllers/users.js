@@ -6,20 +6,33 @@ const jwt = require("jsonwebtoken");
 exports.register = async (req, res, next) => {
   const { username, password } = req.body;
 
-  bcrypt.genSalt(10, function (err, salt) {
-    bcrypt.hash(password, salt, function (err, hash) {
-      // Store to DB
-      const user = new User({ username: username, password: hash });
-      user
-        .save()
-        .then((result) => {
-          res.json({ message: "User created successfully!" });
-        })
-        .catch((err) => {
-          res.json({ message: "User created fail!" });
+  User.findOne({ username })
+    .then((user) => {
+      if (user) {
+        console.log("123");
+        return res.status(400).json({ message: "Username already exists!" });
+      } else {
+        bcrypt.genSalt(10, function (err, salt) {
+          bcrypt.hash(password, salt, function (err, hash) {
+            // Store to DB
+            const user = new User({ username: username, password: hash });
+            user
+              .save()
+              .then((result) => {
+                return res
+                  .status(200)
+                  .json({ message: "User created successfully!" });
+              })
+              .catch((err) => {
+                return res.status(400).json({ message: "User created fail!" });
+              });
+          });
         });
+      }
+    })
+    .catch((err) => {
+      console.log(err);
     });
-  });
 };
 
 exports.login = async (req, res, next) => {
@@ -28,7 +41,7 @@ exports.login = async (req, res, next) => {
   User.findOne({ username })
     .then((user) => {
       if (!user) {
-        res.json({ message: "wrong password or username!" });
+        throw "does not find the user";
       }
       userName = user.username;
       const hashedPassword = user.password;
@@ -40,14 +53,17 @@ exports.login = async (req, res, next) => {
       if (result === true) {
         //login successfully
         jwt.sign({ username: userName }, process.env.PK, function (err, token) {
-          return res.json({ message: "Login successfully!", token: token });
+          return res
+            .status(200)
+            .json({ message: "Login successfully!", token: token });
         });
       } else {
         //wrong password or username
-        return res.json({ message: "username or password is incorrect!" });
+        throw "incorrect password";
       }
     })
     .catch((err) => {
+      res.status(401).json({ message: "Username or password incorrect!" });
       console.log(err);
     });
 };
